@@ -14,15 +14,19 @@ public class EditingUser implements Comparable<EditingUser>{
 		this.name = name;
 		this.editIndex = editIndex;
 	}
+    
 	public String getName() {
 		return name;
 	}
+    
 	public void setName(String name) {
 		this.name = name;
 	}
+    
 	public int getEditIndex() {
 		return editIndex;
 	}
+    
 	public void setEditIndex(int editIndex) {
 		this.editIndex = editIndex;
 	}

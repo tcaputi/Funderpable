@@ -70,11 +70,11 @@ public class Chat extends VerticalLayout{
 			String message = chatInput.getValue().toString();
 			Date timestamp = new Date();
 
-			if (message != null && !message.isEmpty()) {
-				chatSession.getChatLog().add(new ChatEntry(username, timestamp, message));
-				clearChat();
-				updateChatLog();
-			}
+//			if (message != null && !message.isEmpty()) {
+//				chatSession.getChatLog().add(new ChatEntry(username, timestamp, message));
+//				clearChat();
+//				updateChatLog();
+//			}
 		}
 
 		private void clearChat() {
@@ -113,15 +113,15 @@ public class Chat extends VerticalLayout{
 		}
 		
 		private void updateChatLog() {
-			Date newLatestUpdate = null;
-			for(ChatEntry entry : chatSession.getChatLog()) {
-				Date timestamp = entry.getTimestamp();
-				if (timestamp.after(latestupdate)) {
-					newLatestUpdate = timestamp;
-					print(entry);
-				}
-			}
-			if (newLatestUpdate != null) latestupdate = newLatestUpdate;
+//			Date newLatestUpdate = null;
+//			for(ChatEntry entry : chatSession.getChatLog()) {
+//				Date timestamp = entry.getTimestamp();
+//				if (timestamp.after(latestupdate)) {
+//					newLatestUpdate = timestamp;
+//					print(entry);
+//				}
+//			}
+//			if (newLatestUpdate != null) latestupdate = newLatestUpdate;
 		}
 	}
 }

@@ -2,9 +2,10 @@ package com.epsilonlabsllc.funderpable;
 
 import java.io.File;
 
+import org.pakhama.vaadin.mvp.ui.MVPApplication;
 import org.vaadin.artur.icepush.ICEPush;
 
-import com.vaadin.Application;
+import com.epsilonlabsllc.funderpable.chat.presenter.ChatPresenter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -16,14 +17,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
-public class Funderpable extends Application {
+public class Funderpable extends MVPApplication {
  
 	private VerticalLayout layout = new VerticalLayout();
 	private HorizontalLayout header = new HorizontalLayout();
 	private HorizontalLayout mainLayout = new HorizontalLayout();
 	private FileBrowser fileBrowser;
 	private CollaborativeEditor editor;
-	private Chat chat;
+	private ChatPresenter chatPresenter;
 	private HorizontalSplitPanel redBlueSplit = new HorizontalSplitPanel();
 	private HorizontalSplitPanel blueGreenSplit = new HorizontalSplitPanel();
 	
@@ -40,17 +41,18 @@ public class Funderpable extends Application {
 	
     @Override
     public void init() {
-    	this.directory = new File("C:/Users/Tom/Documents/Personal/Java/FileBrowser/src");
+//    	this.directory = new File("E:\\dev\\repos\\Funderpable");
     	this.username = "caputit1";
 
-    	if(editorSession == null) editorSession = new EditorSession(new File("C:/Users/Tom/Documents/Personal/Java/collabeditor/src/main/java/com/epsilonlabsllc/collabeditor/Funderpable.java"));
+    	if(editorSession == null) editorSession = new EditorSession(new File("E:\\dev\\repos\\Funderpable\\src\\main\\java\\com\\epsilonlabsllc\\funderpable\\EditingUser.java"));
     	if(chatSession == null) chatSession = new ChatSession();
     	
     	this.fileBrowser = new FileBrowser(directory);
     	this.editor = new CollaborativeEditor(editorSession, pusher);
-    	this.chat = new Chat(chatSession, username, pusher);
-    	mainLayout.addComponent(pusher);
-    	mainLayout.setExpandRatio(pusher, 0);
+    	this.chatPresenter = createPresenter(ChatPresenter.class);
+    	this.chatPresenter.init(1L, this.username, this.pusher);
+    	this.mainLayout.addComponent(pusher);
+    	this.mainLayout.setExpandRatio(pusher, 0);
     	
         Window mainWindow = new Window("Combinedcollaborativeeditor Application");
         setMainWindow(mainWindow);
@@ -59,7 +61,6 @@ public class Funderpable extends Application {
         mainLayout.setSizeFull();
         fileBrowser.setSizeFull();
         editor.setSizeFull();
-        chat.setSizeFull();
         
         Label title = new Label(editorSession.getFile().getName());
         Button saveButton = new Button("Save");
@@ -80,7 +81,7 @@ public class Funderpable extends Application {
         redBlueSplit.setSplitPosition(350.0f, Component.UNITS_PIXELS);
         
         blueGreenSplit.setFirstComponent(redBlueSplit);
-        blueGreenSplit.setSecondComponent(chat);
+        blueGreenSplit.setSecondComponent(this.chatPresenter.getView().getComponent());
         blueGreenSplit.setMinSplitPosition(150.0f, Component.UNITS_PIXELS);
         blueGreenSplit.setSplitPosition(250.0f, Component.UNITS_PIXELS, true);
         blueGreenSplit.setSizeFull();
