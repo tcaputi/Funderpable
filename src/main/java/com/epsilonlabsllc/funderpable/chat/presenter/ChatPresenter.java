@@ -1,5 +1,6 @@
 package com.epsilonlabsllc.funderpable.chat.presenter;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.pakhama.vaadin.mvp.annotation.event.EventListener;
@@ -24,7 +25,8 @@ public class ChatPresenter extends Presenter<IChatView> {
 	public void onChatInputEvent(ChatInputEvent e) {
 		if (this.initialized) {
 			// Catch the event from the view, tell all mah frenz
-			dispatch(new ChatUpdateEvent(this.sessionId, this.username, e.getMessage(), (new Date()).toString()), EventScope.UNIVERSAL);
+			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+			dispatch(new ChatUpdateEvent(this.sessionId, this.username, e.getMessage(), dateFormat.format(new Date())), EventScope.UNIVERSAL);
 		} else {
 			throw new RuntimeException("This prez ain't init baybee.");
 		}
@@ -32,9 +34,8 @@ public class ChatPresenter extends Presenter<IChatView> {
 
 	@EventListener(event = ChatUpdateEvent.class)
 	public void onChatUpdate(ChatUpdateEvent e) {
-		getView().addChatLine(e.getUserName(), e.getMessage(), e.getTimeStamp());
-		if (e.isForeign()) {
-			// If its foreign we need to push poop
+		if(e.getSessionId() == sessionId){
+			getView().addChatLine(e.getUserName(), e.getMessage(), e.getTimeStamp());
 			this.pusher.push();
 		}
 	}
@@ -43,7 +44,6 @@ public class ChatPresenter extends Presenter<IChatView> {
 		this.sessionId = sessionId;
 		this.username = username;
 		this.pusher = pusher;
-		// Mark initialized
 		this.initialized = true;
 	}
 }

@@ -3,19 +3,19 @@ package com.epsilonlabsllc.funderpable.header.view;
 import org.pakhama.vaadin.mvp.event.EventScope;
 import org.pakhama.vaadin.mvp.view.impl.View;
 
+import com.epsilonlabsllc.funderpable.header.event.BuildEvent;
 import com.epsilonlabsllc.funderpable.header.event.SaveFileEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 
 public class HeaderView extends View implements IHeaderView{
 	private static final long serialVersionUID = -2382322714579392754L;
 	
 	private HorizontalLayout layout = new HorizontalLayout();
 	private Button saveButton = new Button("Save");
-	private Label projectLabel = new Label();
+	private Button buildButton = new Button("Build");
 	
 	public HeaderView(){
 		saveButton.addListener(new ClickListener() {
@@ -27,12 +27,17 @@ public class HeaderView extends View implements IHeaderView{
 			}
 		});
 		
-		layout.addComponent(projectLabel);
+		buildButton.addListener(new ClickListener() {
+			private static final long serialVersionUID = -2532681713979871463L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {//TODO: implement build event/ presenter
+				dispatch(new BuildEvent(), EventScope.PARENT);
+			}
+		});
+		
 		layout.addComponent(saveButton);
-	}
-	
-	@Override
-	public void setProjectName(String name) {
-		projectLabel.setValue(name);
+		layout.addComponent(buildButton);
+		addComponent(layout);
 	}
 }

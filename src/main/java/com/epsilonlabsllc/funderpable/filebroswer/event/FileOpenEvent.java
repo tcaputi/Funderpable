@@ -9,6 +9,9 @@ public class FileOpenEvent extends Event{
 
 	private File file;
 	
+	public FileOpenEvent(){
+	}
+	
 	public FileOpenEvent(File file){
 		this.setFile(file);
 	}

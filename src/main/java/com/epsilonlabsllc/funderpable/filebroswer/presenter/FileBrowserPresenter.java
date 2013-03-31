@@ -14,12 +14,12 @@ public class FileBrowserPresenter extends Presenter<IFileBrowserView>{
 	private static final long serialVersionUID = -3637268767473184414L;
 	
 	public void init(File directory){
-		if(directory != null) getView().populateNodeOrOpen(directory.getAbsolutePath(), null);
+		if(directory != null) getView().populateNodeOrOpen(directory);
 	}
 	
 	@EventListener(event = NodeExpandEvent.class)
 	public void onNodeExpanded(NodeExpandEvent event){
-		getView().populateNodeOrOpen(event.getFileName(), event.getItem());
+		getView().populateNodeOrOpen(event.getFile());
 	}
 	
 	@EventListener(event = FileOpenEvent.class)

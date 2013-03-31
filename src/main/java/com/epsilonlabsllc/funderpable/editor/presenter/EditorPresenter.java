@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.pakhama.vaadin.mvp.annotation.event.EventListener;
+import org.pakhama.vaadin.mvp.event.EventScope;
 import org.pakhama.vaadin.mvp.presenter.impl.Presenter;
 import org.vaadin.aceeditor.collab.DocDiff;
 import org.vaadin.aceeditor.collab.gwt.shared.Doc;
@@ -19,15 +20,18 @@ import com.epsilonlabsllc.funderpable.editor.event.SwitchFileEvent;
 import com.epsilonlabsllc.funderpable.editor.view.IEditorView;
 import com.epsilonlabsllc.funderpable.filebroswer.event.FileOpenEvent;
 import com.epsilonlabsllc.funderpable.header.event.SaveFileEvent;
+import com.epsilonlabsllc.funderpable.ide.event.NotificationEvent;
 
 public class EditorPresenter extends Presenter<IEditorView>{
 	private static final long serialVersionUID = 2361280631532615525L;
 
+	private long sessionId;
 	private EditorSession es;
 	private File currentFile;
 	private ICEPush pusher;
 
-	public void init(EditorSession es, ICEPush pusher){
+	public void init(long sessionId, EditorSession es, ICEPush pusher){
+		this.sessionId = sessionId;
 		this.es = es;
 		this.pusher = pusher;
 		this.currentFile = null;
@@ -35,14 +39,18 @@ public class EditorPresenter extends Presenter<IEditorView>{
 
 	@EventListener(event = SaveFileEvent.class)
 	public void saveFile(SaveFileEvent event){
-		if(currentFile == null) throw new NullPointerException("You cant save to null stupid");
-		try{
-			FileWriter fstream = new FileWriter(currentFile);
-			BufferedWriter out = new BufferedWriter(fstream);
-			out.write(es.getShared(currentFile).getValue().getText());
-			out.close();
-		}catch (Exception e){
-			e.printStackTrace();
+		if(currentFile == null) {
+			dispatch(new NotificationEvent(sessionId, "Nothing to save..."), EventScope.PARENT);
+		}else{
+			dispatch(new NotificationEvent(sessionId, "File Saved"), EventScope.UNIVERSAL);
+			try{
+				FileWriter fstream = new FileWriter(currentFile);
+				BufferedWriter out = new BufferedWriter(fstream);
+				out.write(es.getShared(currentFile).getValue().getText());
+				out.close();
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -54,9 +62,13 @@ public class EditorPresenter extends Presenter<IEditorView>{
 	@EventListener(event = FileOpenEvent.class)
 	public void openFile(FileOpenEvent event) throws IOException{
 		currentFile = event.getFile();
-		Shared<Doc, DocDiff> sharedText = new Shared<Doc, DocDiff>(new Doc(readFileToString(currentFile)));
-		getView().createEditor(currentFile, sharedText, pusher);
-		es.addFile(currentFile, sharedText, this);
+		if(es.getFiles().contains(currentFile)){
+			getView().openToEditor(currentFile, es.getShared(currentFile), pusher);
+		}else{
+			Shared<Doc, DocDiff> sharedText = new Shared<Doc, DocDiff>(new Doc(readFileToString(currentFile)));
+			getView().createEditor(currentFile, sharedText, pusher);
+			es.addFile(currentFile, sharedText, this);
+		}
 	}
 
 	private String readFileToString(File file) throws IOException{
@@ -64,7 +76,7 @@ public class EditorPresenter extends Presenter<IEditorView>{
 		String currentLine;
 		StringBuilder builder = new StringBuilder();
 		while ((currentLine = br.readLine()) != null) {
-			builder.append(currentLine);
+			builder.append(currentLine + "\n");
 		}
 		br.close();
 		return builder.toString();

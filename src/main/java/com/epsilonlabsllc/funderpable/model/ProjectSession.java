@@ -1,6 +1,10 @@
 package com.epsilonlabsllc.funderpable.model;
 
+import java.io.File;
 import java.util.HashSet;
+
+import org.phakama.maven.MavenAnalyzer;
+import org.phakama.maven.model.MavenBuildProject;
 
 import com.epsilonlabsllc.funderpable.EditorSession;
 
@@ -15,8 +19,13 @@ public class ProjectSession {
 		this.project = new Project();
 		this.project.setName("McHardbody");
 //		this.project = project;
-		this.es = new EditorSession(sessionId);
+		this.es = new EditorSession();
 	}
+	
+	public MavenBuildProject getBuildProject(){
+		return MavenAnalyzer.analyze(new File(this.project.getPath()));
+	}
+	
 	public long getSessionId() {
 		return sessionId;
 	}

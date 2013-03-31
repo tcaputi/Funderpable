@@ -9,6 +9,9 @@ public class SwitchFileEvent extends Event{
 
 	private File file;
 	
+	public SwitchFileEvent(){
+	}
+	
 	public SwitchFileEvent(File file){
 		this.setFile(file);
 	}

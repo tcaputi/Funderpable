@@ -12,7 +12,9 @@ import org.vaadin.diffsync.Shared;
 
 import com.epsilonlabsllc.funderpable.CollaborativeEditor;
 import com.epsilonlabsllc.funderpable.editor.event.SwitchFileEvent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.CloseHandler;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
@@ -22,7 +24,7 @@ public class EditorView extends View implements IEditorView{
 
 	HashMap<CollaborativeEditor, File> editors = new HashMap<CollaborativeEditor, File>();
 	private TabSheet tabSheet = new TabSheet();
-	
+
 	public EditorView(){
 		tabSheet.setSizeFull();
 		tabSheet.addListener(new SelectedTabChangeListener() {
@@ -33,8 +35,19 @@ public class EditorView extends View implements IEditorView{
 				EditorView.this.dispatch(new SwitchFileEvent(editors.get(tabSheet.getSelectedTab())), EventScope.PARENT);
 			}
 		});
+		
+		tabSheet.setCloseHandler(new CloseHandler() {
+			private static final long serialVersionUID = 2L;
+
+			@Override
+			public void onTabClose(TabSheet tabsheet, Component tabContent) {
+				tabsheet.removeComponent(tabContent);
+				editors.remove(tabContent);
+			}
+		});
 		addComponent(tabSheet);
 		setExpandRatio(tabSheet, 1.0f);
+		setSizeFull();
 	}
 
 	@Override
@@ -42,7 +55,28 @@ public class EditorView extends View implements IEditorView{
 		CollaborativeEditor newEditor = new CollaborativeEditor(file, sharedText, pusher);
 		editors.put(newEditor, file);
 		Tab tab = tabSheet.addTab(newEditor);
+		tab.setClosable(true);
 		tab.setCaption(file.getName());
 		tabSheet.setSelectedTab(newEditor);
+		newEditor.setSizeFull();
+	}
+
+	@Override
+	public void openToEditor(File file, Shared<Doc, DocDiff> sharedText, ICEPush pusher) {
+		if(!editors.containsValue(file)){
+			CollaborativeEditor newEditor = new CollaborativeEditor(file, sharedText, pusher);
+			editors.put(newEditor, file);
+			Tab tab = tabSheet.addTab(newEditor);
+			tab.setClosable(true);
+			tab.setCaption(file.getName());
+			tabSheet.setSelectedTab(newEditor);
+			newEditor.setSizeFull();
+		}else{
+			for(CollaborativeEditor ce : editors.keySet()){
+				if(editors.get(ce) == file){
+					tabSheet.setSelectedTab(ce);
+				}
+			}
+		}
 	}
 }

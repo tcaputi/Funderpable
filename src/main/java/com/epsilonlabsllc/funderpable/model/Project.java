@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 public class Project extends BaseEntity {
 	private String name;
+	private String path;
 	
 	private HashSet<Build> builds = new HashSet<Build>();
 
@@ -29,5 +30,13 @@ public class Project extends BaseEntity {
 
 	public HashSet<BuildConfiguration> getBuildConfiguations() {
 		return buildConfiguations;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }
