@@ -206,5 +206,11 @@
 			<classifier>sources</classifier>
 			<scope>provided</scope>
 		</dependency>
+		<!-- Pakhama MVP -->
+		<dependency>
+			<groupId>org.pakhama</groupId>
+			<artifactId>org.pakhama.vaadin.mvp</artifactId>
+			<version>0.0.4.1</version>
+		</dependency>
 	</dependencies>
 </project>

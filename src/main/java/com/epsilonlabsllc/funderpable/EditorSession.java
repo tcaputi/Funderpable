@@ -1,63 +1,38 @@
 package com.epsilonlabsllc.funderpable;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Set;
 
+import org.pakhama.vaadin.mvp.event.EventScope;
+import org.pakhama.vaadin.mvp.event.IEventDispatcher;
 import org.vaadin.aceeditor.collab.DocDiff;
 import org.vaadin.aceeditor.collab.gwt.shared.Doc;
 import org.vaadin.diffsync.Shared;
 
 public class EditorSession {
 
-	private Shared<Doc, DocDiff> sharedText;
-	private File file;
+	private long sessionId = -1;
+	private HashMap<File, Shared<Doc, DocDiff>> sharedTextMap = new HashMap<File, Shared<Doc, DocDiff>>();
 	
-	public EditorSession(File file){
-		this.file = file;
-		readFile();
-	}
-	
-	public void readFile() {
-		BufferedReader br = null;
-		try {
-			String text = "";
-			String sCurrentLine;
-			br = new BufferedReader(new FileReader(file));
-			while ((sCurrentLine = br.readLine()) != null) {
-				text += sCurrentLine + "\n";
-			}
-			br.close();
-			sharedText = new Shared<Doc, DocDiff>(new Doc(text));
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-	}
-
-	public void saveFile()  {
-		try{
-			FileWriter fstream = new FileWriter(file);
-			BufferedWriter out = new BufferedWriter(fstream);
-			out.write(sharedText.getValue().getText());
-			out.close();
-		}catch (Exception e){
-			e.printStackTrace();
-		}
+	public EditorSession(long sessionId){
+		this.sessionId = sessionId;
 	}
 	
-	public Shared<Doc, DocDiff> getSharedText() {
-		return sharedText;
+	public Set<File> getFiles(){
+		return sharedTextMap.keySet();
 	}
-	public void setSharedText(Shared<Doc, DocDiff> sharedText) {
-		this.sharedText = sharedText;
+	
+	public Shared<Doc, DocDiff> getShared(File file){
+		return sharedTextMap.get(file);
 	}
-	public File getFile() {
-		return file;
+	
+	public void addFile(File file, Shared<Doc, DocDiff> shared, IEventDispatcher dispatcher){
+		sharedTextMap.put(file, shared);
+		dispatcher.dispatch(new FileAddedEvent(file, sessionId), EventScope.UNIVERSAL);
 	}
-	public  void setFile(File file) {
-		this.file = file;
+	
+	public void removeFile(File file){
+		sharedTextMap.remove(file);
 	}
 }

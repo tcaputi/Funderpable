@@ -1,9 +1,13 @@
 package com.epsilonlabsllc.funderpable;
 
+import java.io.File;
+
 import org.vaadin.aceeditor.collab.DocDiff;
 import org.vaadin.aceeditor.collab.SuggestibleCollabAceEditor;
+import org.vaadin.aceeditor.collab.gwt.shared.Doc;
 import org.vaadin.aceeditor.gwt.ace.AceMode;
 import org.vaadin.artur.icepush.ICEPush;
+import org.vaadin.diffsync.Shared;
 import org.vaadin.diffsync.gwt.shared.SendPolicy;
 
 import com.vaadin.terminal.PaintException;
@@ -14,13 +18,13 @@ public class CollaborativeEditor extends SuggestibleCollabAceEditor{
 
 	private ICEPush pusher;
 
-	public CollaborativeEditor(EditorSession editorSession, ICEPush pusher) {
-		super(editorSession.getSharedText());
+	public CollaborativeEditor(File file, Shared<Doc, DocDiff> sharedText, ICEPush pusher) {
+		super(sharedText);
 		this.pusher = pusher;
 		
 		setSendPolicy(SendPolicy.IMMEDIATELY);
 		
-		String extension = editorSession.getFile().getName().substring(editorSession.getFile().getName().lastIndexOf(".") + 1);
+		String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1);
 		if(extension.equalsIgnoreCase("asc")) setMode(AceMode.ascii_doc);
 		else if(extension.equalsIgnoreCase("cpp") || extension.equalsIgnoreCase("c") || extension.equalsIgnoreCase("h")) setMode(AceMode.c_cpp);
 		else if(extension.equalsIgnoreCase("cs")) setMode(AceMode.csharp);
