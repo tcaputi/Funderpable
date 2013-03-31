@@ -12,11 +12,11 @@
         <init-param>
             <description>Vaadin application class to start</description>
             <param-name>application</param-name>
-            <param-value>com.epsilonlabsllc.funderpable.Funderpable</param-value>
+            <param-value>com.darkside.mojave.web.mvp.Funderpable</param-value>
         </init-param>
         <init-param>
 			<param-name>widgetset</param-name>
-			<param-value>com.epsilonlabsllc.funderpable.widgetset.Widgetset</param-value>
+			<param-value>com.darkside.mojave.web.mvp.widgetset.Widgetset</param-value>
 		</init-param>
     </servlet>
     <servlet-mapping>
